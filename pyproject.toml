@@ -22,18 +22,15 @@ line-length = 120
 [project]
 name = "package-fortuna"
 dynamic = ["version"]
-description = "A package for predicting roulette outcomes from video."
+description = "A package for fitting object detection models."
 readme = "README.md"
 requires-python = ">=3.7"
 dependencies = [
-<<<<<<< HEAD
     "torchvision",
     "torch",
     "pycocotools",
-    "numpy"
-=======
+    "numpy",
     "tqdm>=4.64.1"
->>>>>>> d5245f28ea16f66e7147fba2dec779ebe227cc5b
 ]
 
 [project.optional-dependencies]
@@ -44,11 +41,7 @@ develop = [
     "pre-commit>=2.20.0",
     "ruff",
     "furo>=2022.12.7",
-<<<<<<< HEAD
     "build>=0.10.0",
     "jupyter",
     "notebook"
-=======
-    "build>=0.10.0" 
->>>>>>> d5245f28ea16f66e7147fba2dec779ebe227cc5b
 ]

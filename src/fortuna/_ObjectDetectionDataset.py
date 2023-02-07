@@ -6,8 +6,13 @@ import torch
 from PIL import Image
 
 from .utils import get_bbox_from_mask
+<<<<<<< HEAD
 from .torchutils.engine import train_one_epoch, evaluate
 from .torchutils.utils import collate_fn
+=======
+from torchutils.engine import train_one_epoch, evaluate
+from torchutils.utils import collate_fn
+>>>>>>> d5245f28ea16f66e7147fba2dec779ebe227cc5b
 from .torchutils import transforms as T
 
 class ObjectDetectionDataset(torch.utils.data.Dataset):

@@ -1,7 +1,11 @@
+from pathlib import Path
+
 import torchvision
+import torch
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
 
+WEIGHT_PATH = Path(__file__).parent.parent / "_models" / "maskrcnn_resnet50_fpn_coco-bf2d0c1e.pth"
 
 def get_model(num_classes: int) \
     -> torchvision.models.detection.mask_rcnn.MaskRCNN:
@@ -16,7 +20,9 @@ def get_model(num_classes: int) \
     
     """
     # Load an instance segmentation model pre-trained on COCO.
-    model = torchvision.models.detection.maskrcnn_resnet50_fpn(weights="DEFAULT")
+    model = torchvision.models.detection.maskrcnn_resnet50_fpn(weights_backbone=None)
+    model.load_state_dict(torch.load(WEIGHT_PATH))
+
 
     # Replace the pre-trained box predictor head with a new one.
     in_features = model.roi_heads.box_predictor.cls_score.in_features    

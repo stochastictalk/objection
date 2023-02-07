@@ -26,7 +26,10 @@ description = "A package for predicting roulette outcomes from video."
 readme = "README.md"
 requires-python = ">=3.7"
 dependencies = [
-    "tqdm>=4.64.1"
+    "torchvision",
+    "torch",
+    "pycocotools",
+    "numpy"
 ]
 
 [project.optional-dependencies]
@@ -37,5 +40,7 @@ develop = [
     "pre-commit>=2.20.0",
     "ruff",
     "furo>=2022.12.7",
-    "build>=0.10.0" 
+    "build>=0.10.0",
+    "jupyter",
+    "notebook"
 ]

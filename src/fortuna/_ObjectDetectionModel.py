@@ -43,33 +43,33 @@ class ObjectDetectionModel:
         device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
         
         # Get the model.
-        model = get_model(self.n_classes)
-        model.to(device)
+        self.model = get_model(self.n_classes)
+        self.model.to(device)
 
         # Get dataloaders.
         training_dataloader = torch.utils.data.DataLoader(
             training_dataset,
             batch_size=2,
             shuffle=True,
-            num_workers=4,
-            collate_fn=lambda batch: tuple(zip(*batch))
+            # num_workers=4,
+            collate_fn=lambda batch: tuple(zip(*batch)) # merges a list of samples to form a mini-batch of Tensors
         )
         validation_dataloader = torch.utils.data.DataLoader(
             validation_dataset,
             batch_size=1,
             shuffle=False,
-            num_workers=4,
+            # num_workers=4,
             collate_fn=lambda batch: tuple(zip(*batch))
         )
 
         # Get optimizer.
         optimizer = torch.optim.Adam(
-            [p for p in model.parameters() if p.requires_grad]
+            [p for p in self.model.parameters() if p.requires_grad]
         )
 
         for epoch in range(n_epochs):
             train_one_epoch(
-                model,
+                self.model,
                 optimizer,
                 training_dataloader,
                 device,
@@ -78,7 +78,7 @@ class ObjectDetectionModel:
             )
             
             evaluate(
-                model,
+                self.model,
                 validation_dataloader,
                 device=device
             )

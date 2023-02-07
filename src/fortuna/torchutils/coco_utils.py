@@ -4,7 +4,11 @@ import os
 import torch
 import torch.utils.data
 import torchvision
+<<<<<<< HEAD
+from . import transforms as T
+=======
 import detection.transforms as T
+>>>>>>> d5245f28ea16f66e7147fba2dec779ebe227cc5b
 from pycocotools import mask as coco_mask
 from pycocotools.coco import COCO
 

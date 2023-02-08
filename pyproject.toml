@@ -29,8 +29,7 @@ dependencies = [
     "torchvision",
     "torch",
     "pycocotools",
-    "numpy",
-    "tqdm>=4.64.1"
+    "numpy"
 ]
 
 [project.optional-dependencies]

@@ -1,13 +1,6 @@
 # 🐊 Fortuna
 
-Fortuna is a Python package for fitting object detection models. ~predicting roulette outcomes from video~.
-
-
-## Feature Priority Stack
-
-1. Include example data (Penn Fudan dataset).
-2. Fit a model (probably the one provided by `fortuna.models.get_model`) to a dataset (probably the Penn Fudan dataset) using `ObjectDetectionDataset` and `ObjectDetectionModel`.
-2. Share with Rachel and Tom to fit IR model?
+Fortuna is a Python package for fitting object detection models
 
 ## Overview
 

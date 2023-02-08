@@ -22,7 +22,7 @@ line-length = 120
 [project]
 name = "package-fortuna"
 dynamic = ["version"]
-description = "A package for predicting roulette outcomes from video."
+description = "A package for fitting object detection models."
 readme = "README.md"
 requires-python = ">=3.7"
 dependencies = [

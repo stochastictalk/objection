@@ -23,7 +23,6 @@ def get_model(num_classes: int) \
     model = torchvision.models.detection.maskrcnn_resnet50_fpn(weights_backbone=None)
     model.load_state_dict(torch.load(WEIGHT_PATH))
 
-
     # Replace the pre-trained box predictor head with a new one.
     in_features = model.roi_heads.box_predictor.cls_score.in_features    
     model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)

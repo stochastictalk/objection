@@ -7,6 +7,13 @@ Fortuna is a Python package for fitting object detection models
 This package allows you to fit an object detection model to your own data. 
 
 
+## Priority stack
+
+- Fix `Examples.ipynb`.
+- Create small dummy dataset.
+- Include data labelling instructions.
+- End-to-end quickstart in readme.
+
 ## Quickstart
 
 First, prove to yourself the package installs correctly, its tests run, and its documentation compiles.

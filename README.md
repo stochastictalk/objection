@@ -14,7 +14,49 @@ This package allows you to fit an object detection model to your own data.
 - Include data labelling instructions.
 - End-to-end quickstart in readme.
 
-## Quickstart
+## End-to-end Example
+
+This example shows how to use the package to train an object detector using your own data. It goes through everything from creating image annotations through to evaluating a model and exporting it.
+
+These instructions assume you have Docker installed.
+
+### 1. Create image annotations using Label Studio.
+
+We'll use[LabelStudio]() to create annotations for your images.
+
+Move your images into a directory `<your-dataset-name>/images` and create an empty directory `<your-dataset-name>/masks`. Set `<your-dataset-name>` to your current working directory. Launch a local LabelStudio server using Docker via
+```
+docker run -it -p 8080:8080 -v ${PWD}:/label-studio/data heartexlabs/label-studio:latest
+```
+Open `localhost:8080` in your browser.
+
+[Getting started with Label Studio](https://labelstud.io/blog/zero-to-one-getting-started-with-label-studio).
+
+1. Create Project.
+2. Import your data.
+3. Select 'Semantic Segmentation with Polygons'.
+4. Don't fuck about with the default labelling settings.
+5. Use the lock if you need to label overlapping objects.
+6. Click 'Submit' to save the annotation.
+7. Navigate to the database view.
+
+### 2. Load the data with `ObjectDetectionDataset`.
+
+
+
+### 3. Fit the model with `ObjectDetectionModel.fit()`.
+
+
+
+### 4. Evaluate the model with `ObjectDetectionModel.evaluate()`.
+
+
+
+### 5. Export the model with `ObjectDetectionModel.write()`.
+
+
+
+## Developer Quickstart
 
 First, prove to yourself the package installs correctly, its tests run, and its documentation compiles.
 

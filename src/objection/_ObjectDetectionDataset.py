@@ -1,9 +1,10 @@
 import pathlib
 from typing import List, Tuple
+from PIL import Image
 
 import numpy as np
 import torch
-from PIL import Image
+from pycocotools.coco import COCO
 
 from .utils import get_bbox_from_mask
 from .torchutils.engine import train_one_epoch, evaluate
@@ -14,30 +15,25 @@ class ObjectDetectionDataset(torch.utils.data.Dataset):
 
     def __init__(
         self,
-        image_paths=List[pathlib.Path],
-        mask_paths=List[pathlib.Path],
-        transforms=None
+        annotations_filepath: pathlib.Path,
+        transforms=[]
         ):
         """
         Parameters
         ----------
-        transforms : List[@TODO]
+        annotations_filepath : pathlib.Path
+            Filepath of image annotations in COCO format.
+
+        transforms : List[@TODO], default=[]
             List of fortuna.torchutils.transforms classes.
-
-        image_paths : List[pathlib.Path]
-            List of image paths.
-
-        mask_paths : List[pathlib.Path]
-            List of image mask paths. What is the format of the masks?
         """
+        self.annotations_filepath = pathlib.Path(annotations_filepath)
         self.default_transforms = T.Compose([
             T.PILToTensor(),
             T.ConvertImageDtype(torch.float)
             ])
-
         self.user_transforms = T.Compose(transforms)
-        self.image_paths = image_paths
-        self.mask_paths = mask_paths
+        self.coco = COCO(annotations_filepath)
 
     def __getitem__(self, index: int):
         """
@@ -52,32 +48,39 @@ class ObjectDetectionDataset(torch.utils.data.Dataset):
             Image and target.
         """
         # Get image and mask paths.
-        image_path = self.image_paths[index]
-        mask_path = self.mask_paths[index]
+        filename = pathlib.Path(self.coco.imgs[index]["file_name"]).name
+        image_path = self.annotations_filepath.parent / "images" / filename
         
         # Load image.
         image = Image.open(image_path).convert("RGB")
         
         # Load mask. NB object_ids denote distinct objects, not classes.
-        mask = Image.open(mask_path)
-        mask = np.array(mask)
-        object_ids = np.unique(mask) # Get object ids from distinct values in mask.
-        object_ids = object_ids[1:] # First id (0) is the background, so remove it.
-        masks = (mask == object_ids[:, None, None]) # Each channel of masks corresponds to a different object id.
+        # Get annotation ids for image.
+        annotation_masks = []
+        annotation_classes = []
+        for annotation_id in self.coco.getAnnIds(index):
+            annotation = self.coco.anns[annotation_id]
+            annotation_masks.append(self.coco.annToMask(annotation))
+            annotation_classes.append(annotation["category_id"])
+        masks = np.stack(annotation_masks, axis=0) # Each channel is a different binary mask.
+
+        # Cast each one to a mask and retrieve its class.
+        #self.coco.annToMask() # Each channel of masks corresponds to a different object id.
 
         # Extract bounding box coordinates from each segmentation mask.
-        n_objects = len(object_ids)
+        n_objects = masks.shape[0]
         bboxes = [get_bbox_from_mask(masks[i, :, :]) for i in range(n_objects)]
         bboxes = torch.as_tensor(bboxes, dtype=torch.float32)
 
         # Package into dict.
         target = {
             "boxes": bboxes, # Bounding boxes.
-            "labels": torch.ones((n_objects,), dtype=torch.int64), # Class labels (only one class for PennFudan).
+            "labels": torch.as_tensor(annotation_classes, dtype=torch.int64), # Class labels (only one class for PennFudan).
             "masks": torch.as_tensor(masks, dtype=torch.uint8), # Segmentation masks.
             "image_id": torch.tensor([index]),
             "area": (bboxes[:, 3] - bboxes[:, 1]) * (bboxes[:, 2] - bboxes[:, 0]),
-            "is_crowd": torch.zeros((n_objects,), dtype=torch.int64) # Set iscrowd = False for all.
+            "is_crowd": torch.zeros((n_objects,), dtype=torch.int64), # Set iscrowd = False for all.
+            "filename": filename
         }
 
         # Apply default transforms.
@@ -90,4 +93,3 @@ class ObjectDetectionDataset(torch.utils.data.Dataset):
 
     def __len__(self):
         return len(self.image_paths)
-    

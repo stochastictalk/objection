@@ -47,10 +47,7 @@ To label multiple objects, especially if they overlap, you'll find it useful to 
 
 When you've created all of your labels, export them via the 'Export' button. Select the 'COCO' format then click 'Export'. Your browser will download a zip archive.
 
-[Getting started with Label Studio](https://labelstud.io/blog/zero-to-one-getting-started-with-label-studio).
-
-
-@TODO complete these instructions.
+[Getting Started with Label Studio](https://labelstud.io/blog/zero-to-one-getting-started-with-label-studio).
 
 
 ### 2. Load the data with `ObjectDetectionDataset`.

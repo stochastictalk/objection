@@ -48,7 +48,8 @@ class ObjectDetectionDataset(torch.utils.data.Dataset):
             Image and target.
         """
         # Get image and mask paths.
-        image_path = self.annotations_filepath.parent / "images" / pathlib.Path(self.coco.imgs[index]["file_name"]).name
+        filename = pathlib.Path(self.coco.imgs[index]["file_name"]).name
+        image_path = self.annotations_filepath.parent / "images" / filename
         
         # Load image.
         image = Image.open(image_path).convert("RGB")
@@ -78,7 +79,8 @@ class ObjectDetectionDataset(torch.utils.data.Dataset):
             "masks": torch.as_tensor(masks, dtype=torch.uint8), # Segmentation masks.
             "image_id": torch.tensor([index]),
             "area": (bboxes[:, 3] - bboxes[:, 1]) * (bboxes[:, 2] - bboxes[:, 0]),
-            "is_crowd": torch.zeros((n_objects,), dtype=torch.int64) # Set iscrowd = False for all.
+            "is_crowd": torch.zeros((n_objects,), dtype=torch.int64), # Set iscrowd = False for all.
+            "filename": filename
         }
 
         # Apply default transforms.

@@ -40,6 +40,9 @@ Open `localhost:8080` in your browser.
 6. Click 'Submit' to save the annotation.
 7. Navigate to the database view.
 
+@TODO complete these instructions.
+
+
 ### 2. Load the data with `ObjectDetectionDataset`.
 
 

@@ -14,15 +14,15 @@ where = ["src"]
 namespaces = true
 
 [tool.setuptools_scm]
-write_to = "src/fortuna/_version.py"
+write_to = "src/objection/_version.py"
 
 [tool.ruff]
 line-length = 120
 
 [project]
-name = "package-fortuna"
+name = "objection"
 dynamic = ["version"]
-description = "A package for fitting object detection models."
+description = "A Python package that simplifies the workflow for creating a semantic segmentation/object detection model."
 readme = "README.md"
 requires-python = ">=3.7"
 dependencies = [

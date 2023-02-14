@@ -1,50 +1,65 @@
-# 🐊 Fortuna
+# ❗ Objection
 
-Fortuna is a Python package for fitting object detection models
+`objection` is a Python package that simplifies the workflow for creating a semantic segmentation/object detection model. 
 
-## Overview
+It includes
+- ✏️ An out-of-the-box solution for creating image masks.
+- 🏋️ Painless loading of object detection data into PyTorch.
+- ⚡ Automated fine-tuning of a model sized for your use-case.
+- 🧪 Convenience functions for in-depth validation of the trained model on out-of-sample data.
 
-This package allows you to fit an object detection model to your own data. 
-
-
-## Priority stack
-
-- Fix `Examples.ipynb`.
-- Create small dummy dataset.
-- Include data labelling instructions.
-- End-to-end quickstart in readme.
+@TODO:
+- Integrate LabelStudio.
+- Write instructions for end-to-end example.
+- Tools for model validation.
 
 ## End-to-end Example
 
-This example shows how to use the package to train an object detector using your own data. It goes through everything from creating image annotations through to evaluating a model and exporting it.
+This example shows how to use the package to train an  using your own data. It goes through everything from creating image annotations through to evaluating a model and exporting it. It assumes you are using MacOS or Linux.
 
-These instructions assume you have Docker installed.
+@TODO: toc
 
-### 1. Create image annotations using Label Studio.
+### 1. Configure Label Studio.
 
-We'll use[LabelStudio]() to create annotations for your images.
-
-Move your images into a directory `<your-dataset-name>/images` and create an empty directory `<your-dataset-name>/masks`. Set `<your-dataset-name>` to your current working directory. Launch a local LabelStudio server using Docker via
+We'll use[LabelStudio]() to create annotations for your images. Launch it using Docker by running
 ```
-docker run -it -p 8080:8080 -v ${PWD}:/label-studio/data heartexlabs/label-studio:latest
-```
+docker run -it -p 8080:8080 -v ${PWD}/mydata:/label-studio/data heartexlabs/label-studio:latest label-studio --log-level DEBUG
+``` 
+If you are using Apple silicon then you will need to configure Docker to use architecture emulation by setting the environment variable `DOCKER_DEFAULT_PLATFORM=linux/amd64`.
+
 Open `localhost:8080` in your browser.
 
-[Getting started with Label Studio](https://labelstud.io/blog/zero-to-one-getting-started-with-label-studio).
+Create an account. The account details are only stored locally.
 
-1. Create Project.
-2. Import your data.
-3. Select 'Semantic Segmentation with Polygons'.
-4. Don't fuck about with the default labelling settings.
-5. Use the lock if you need to label overlapping objects.
-6. Click 'Submit' to save the annotation.
-7. Navigate to the database view.
+Click 'Create Project', give your project a name, then click 'Data Import'. 
 
-@TODO complete these instructions.
+Upload the files from your machine that you want to create labels for. You can Shift+click to select a range. When you're done, click 'Labeling Setup' and choose 'Semantic Segmentation with Polygons'.
+
+Remove the default labels and add the class labels you plan to use. In this example, there is only one class - 'Hat'. Click 'Save' to complete setup.
+
+### 2. Create and Export Image Annotations.
+
+To label an image, click its entry in the navigation view, select the label beneath the image of the object you want to label, then click out a sequence of points that enclose the object. 
+
+To label multiple objects, especially if they overlap, you'll find it useful to use the 'lock' and 'hide' features available when you highlight an entry in the central panel. Click 'Submit' to save your annotations.
+
+@TODO: re-loading data from a previous session (probably just restarting the docker container).
+
+When you've created all of your labels, export them via the 'Export' button. Select the 'COCO' format then click 'Export'. Your browser will download a zip archive.
+
+[Getting Started with Label Studio](https://labelstud.io/blog/zero-to-one-getting-started-with-label-studio).
 
 
 ### 2. Load the data with `ObjectDetectionDataset`.
 
+Unzip the archive and copy the filepath of `results.json`. Be sure not to separate `results.json` and the `images/` directory - you can move them, but make sure they sit side-by-side.
+
+Launch a Python interpreter and load the data as a PyTorch dataset:
+```
+from objection import ObjectDetectionDataset
+
+data = ObjectDetectionDataset("data/hats/result.json")
+```
 
 
 ### 3. Fit the model with `ObjectDetectionModel.fit()`.

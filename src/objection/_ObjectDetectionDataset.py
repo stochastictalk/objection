@@ -6,7 +6,6 @@ import numpy as np
 import torch
 from pycocotools.coco import COCO
 
-from .utils import get_bbox_from_mask
 from .torchutils.engine import train_one_epoch, evaluate
 from .torchutils.utils import collate_fn
 from .torchutils import transforms as T
@@ -16,17 +15,24 @@ class ObjectDetectionDataset(torch.utils.data.Dataset):
     def __init__(
         self,
         annotations_filepath: pathlib.Path,
-        transforms=[]
+        index_subset: List[int] = None,
+        transforms: List = []
         ):
         """
         Parameters
         ----------
         annotations_filepath : pathlib.Path
             Filepath of image annotations in COCO format.
+            
+        index_subset : List[int], default=None
+            List of image indices in annotations file to use to 
+            create dataset. If None, the entire annotations file
+            is used to create the dataset.
 
         transforms : List[@TODO], default=[]
             List of fortuna.torchutils.transforms classes.
         """
+        
         self.annotations_filepath = pathlib.Path(annotations_filepath)
         self.default_transforms = T.Compose([
             T.PILToTensor(),
@@ -34,6 +40,12 @@ class ObjectDetectionDataset(torch.utils.data.Dataset):
             ])
         self.user_transforms = T.Compose(transforms)
         self.coco = COCO(annotations_filepath)
+        if index_subset is None:
+            self.index_subset = range(len(self.coco.imgs))
+        elif isinstance(index_subset, List):
+            self.index_subset = index_subset
+        else:
+            raise TypeError("`index_subset` should be of type List[int].")
 
     def __getitem__(self, index: int):
         """
@@ -47,6 +59,9 @@ class ObjectDetectionDataset(torch.utils.data.Dataset):
         Tensor, Dictionary
             Image and target.
         """
+        # Map index using index_subset.
+        index = self.index_subset[index]
+        
         # Get image and mask paths.
         filename = pathlib.Path(self.coco.imgs[index]["file_name"]).name
         image_path = self.annotations_filepath.parent / "images" / filename
@@ -68,6 +83,7 @@ class ObjectDetectionDataset(torch.utils.data.Dataset):
         #self.coco.annToMask() # Each channel of masks corresponds to a different object id.
 
         # Extract bounding box coordinates from each segmentation mask.
+        from .utils._get_bbox_from_mask import get_bbox_from_mask # Here to avoid circular import.
         n_objects = masks.shape[0]
         bboxes = [get_bbox_from_mask(masks[i, :, :]) for i in range(n_objects)]
         bboxes = torch.as_tensor(bboxes, dtype=torch.float32)
@@ -79,8 +95,7 @@ class ObjectDetectionDataset(torch.utils.data.Dataset):
             "masks": torch.as_tensor(masks, dtype=torch.uint8), # Segmentation masks.
             "image_id": torch.tensor([index]),
             "area": (bboxes[:, 3] - bboxes[:, 1]) * (bboxes[:, 2] - bboxes[:, 0]),
-            "is_crowd": torch.zeros((n_objects,), dtype=torch.int64), # Set iscrowd = False for all.
-            "filename": filename
+            "iscrowd": torch.zeros((n_objects,), dtype=torch.int64), # Set iscrowd = False for all.
         }
 
         # Apply default transforms.
@@ -92,4 +107,4 @@ class ObjectDetectionDataset(torch.utils.data.Dataset):
         return image, target
 
     def __len__(self):
-        return len(self.image_paths)
+        return len(self.index_subset)

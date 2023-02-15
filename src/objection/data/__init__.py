@@ -1,7 +1,7 @@
 from pathlib import Path
 
-pedestrians_dirpath = Path(__file__).parent.parent / "_data" / "pedestrians"
+hats_dirpath = Path(__file__).parent.parent / "_data" / "hats"
 
 __all__ = [
-    "pedestrians_dirpath"
+    "hats_dirpath"
 ]

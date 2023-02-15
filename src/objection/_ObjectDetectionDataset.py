@@ -39,7 +39,11 @@ class ObjectDetectionDataset(torch.utils.data.Dataset):
             T.ConvertImageDtype(torch.float)
             ])
         self.user_transforms = T.Compose(transforms)
-        self.coco = COCO(annotations_filepath)
+
+        from .utils._HiddenPrints import HiddenPrints # Avoids circular import.
+        with HiddenPrints(): # Suppress print statements.
+            self.coco = COCO(annotations_filepath)
+
         if index_subset is None:
             self.index_subset = range(len(self.coco.imgs))
         elif isinstance(index_subset, List):

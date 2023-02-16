@@ -1,8 +1,8 @@
+import math
 from typing import Generator, List
 
 import numpy as np
 import torch
-
 
 from .models._get_model import get_model
 from .torchutils.engine import train_one_epoch, evaluate
@@ -67,21 +67,26 @@ class ObjectDetectionModel:
             [p for p in self.model.parameters() if p.requires_grad]
         )
 
-        for epoch in range(n_epochs):
-            train_one_epoch(
-                self.model,
-                optimizer,
-                training_dataloader,
-                device,
-                epoch,
-                print_freq=10
-            )
+        # Fit the model.
+        for images, targets in training_dataloader:
+            # Load images and targets onto GPU.
+            images = list(image.to(device) for image in images)
+            targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
             
-            evaluate(
-                self.model,
-                validation_dataloader,
-                device=device
-            )
+            # Make forward pass.
+            loss_dict = self.model(images, targets)
+            losses = sum(loss for loss in loss_dict.values())
+            loss_value = losses.item()
+
+            # Check loss is not NaN.
+            if not math.isfinite(loss_value):
+                break
+
+            # Compute gradients and update parameters.
+            optimizer.zero_grad()
+            losses.backward()
+            optimizer.step()
+
     
     def evaluate(
         dataset : ObjectDetectionDataset

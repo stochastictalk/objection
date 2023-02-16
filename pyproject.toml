@@ -29,7 +29,8 @@ dependencies = [
     "torchvision",
     "torch",
     "pycocotools",
-    "numpy"
+    "numpy",
+    "tensorboard"
 ]
 
 [project.optional-dependencies]
@@ -42,5 +43,5 @@ develop = [
     "furo>=2022.12.7",
     "build>=0.10.0",
     "jupyter",
-    "notebook"
+    "notebook",
 ]

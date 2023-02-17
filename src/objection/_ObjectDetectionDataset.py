@@ -6,9 +6,7 @@ import numpy as np
 import torch
 from pycocotools.coco import COCO
 
-from .torchutils.engine import train_one_epoch, evaluate
-from .torchutils.utils import collate_fn
-from .torchutils import transforms as T
+from .utils import transforms as T
 
 class ObjectDetectionDataset(torch.utils.data.Dataset):
 

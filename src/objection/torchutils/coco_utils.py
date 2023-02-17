@@ -4,7 +4,7 @@ import os
 import torch
 import torch.utils.data
 import torchvision
-from ..utils import transforms as T
+from ..transforms import Compose
 from pycocotools import mask as coco_mask
 from pycocotools.coco import COCO
 
@@ -232,7 +232,7 @@ def get_coco(root, image_set, transforms, mode="instances"):
 
     if transforms is not None:
         t.append(transforms)
-    transforms = T.Compose(t)
+    transforms = Compose(t)
 
     img_folder, ann_file = PATHS[image_set]
     img_folder = os.path.join(root, img_folder)

@@ -6,7 +6,7 @@ import numpy as np
 import torch
 from pycocotools.coco import COCO
 
-from .utils import transforms as T
+from .transforms import PILToTensor, ConvertImageDtype, Compose
 
 class ObjectDetectionDataset(torch.utils.data.Dataset):
 
@@ -32,11 +32,11 @@ class ObjectDetectionDataset(torch.utils.data.Dataset):
         """
         
         self.annotations_filepath = pathlib.Path(annotations_filepath)
-        self.default_transforms = T.Compose([
-            T.PILToTensor(),
-            T.ConvertImageDtype(torch.float)
+        self.default_transforms = Compose([
+            PILToTensor(),
+            ConvertImageDtype(torch.float)
             ])
-        self.user_transforms = T.Compose(transforms)
+        self.user_transforms = Compose(transforms)
 
         from .utils._HiddenPrints import HiddenPrints # Avoids circular import.
         with HiddenPrints(): # Suppress print statements.

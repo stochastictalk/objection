@@ -28,7 +28,7 @@ class ObjectDetectionDataset(torch.utils.data.Dataset):
             is used to create the dataset.
 
         transforms : List[@TODO], default=[]
-            List of fortuna.torchutils.transforms classes.
+            List of objectection.torchutils.transforms classes.
         """
         
         self.annotations_filepath = pathlib.Path(annotations_filepath)

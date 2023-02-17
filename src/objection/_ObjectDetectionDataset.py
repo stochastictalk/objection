@@ -6,9 +6,7 @@ import numpy as np
 import torch
 from pycocotools.coco import COCO
 
-from .torchutils.engine import train_one_epoch, evaluate
-from .torchutils.utils import collate_fn
-from .torchutils import transforms as T
+from .transforms import PILToTensor, ConvertImageDtype, Compose
 
 class ObjectDetectionDataset(torch.utils.data.Dataset):
 
@@ -30,15 +28,15 @@ class ObjectDetectionDataset(torch.utils.data.Dataset):
             is used to create the dataset.
 
         transforms : List[@TODO], default=[]
-            List of fortuna.torchutils.transforms classes.
+            List of objectection.torchutils.transforms classes.
         """
         
         self.annotations_filepath = pathlib.Path(annotations_filepath)
-        self.default_transforms = T.Compose([
-            T.PILToTensor(),
-            T.ConvertImageDtype(torch.float)
+        self.default_transforms = Compose([
+            PILToTensor(),
+            ConvertImageDtype(torch.float)
             ])
-        self.user_transforms = T.Compose(transforms)
+        self.user_transforms = Compose(transforms)
 
         from .utils._HiddenPrints import HiddenPrints # Avoids circular import.
         with HiddenPrints(): # Suppress print statements.

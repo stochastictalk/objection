@@ -1,56 +1,67 @@
 import torch
-import transforms as T
+from ..transforms import (
+    Compose,
+    RandomHorizontalFlip,
+    PILToTensor,
+    ConvertImageDtype,
+    ScaleJitter,
+    FixedSizeCrop,
+    RandomPhotometricDistort,
+    RandomZoomOut,
+    RandomShortestSize,
+    RandomIoUCrop
+) 
 
 
 class DetectionPresetTrain:
     def __init__(self, *, data_augmentation, hflip_prob=0.5, mean=(123.0, 117.0, 104.0)):
         if data_augmentation == "hflip":
-            self.transforms = T.Compose(
+            self.transforms = Compose(
                 [
-                    T.RandomHorizontalFlip(p=hflip_prob),
-                    T.PILToTensor(),
-                    T.ConvertImageDtype(torch.float),
+                    RandomHorizontalFlip(p=hflip_prob),
+                    PILToTensor(),
+                    ConvertImageDtype(torch.float),
                 ]
             )
         elif data_augmentation == "lsj":
-            self.transforms = T.Compose(
+            self.transforms = Compose(
                 [
-                    T.ScaleJitter(target_size=(1024, 1024)),
-                    T.FixedSizeCrop(size=(1024, 1024), fill=mean),
-                    T.RandomHorizontalFlip(p=hflip_prob),
-                    T.PILToTensor(),
-                    T.ConvertImageDtype(torch.float),
+                    ScaleJitter(target_size=(1024, 1024)),
+                    FixedSizeCrop(size=(1024, 1024), fill=mean),
+                    RandomHorizontalFlip(p=hflip_prob),
+                    PILToTensor(),
+                    ConvertImageDtype(torch.float),
                 ]
             )
         elif data_augmentation == "multiscale":
-            self.transforms = T.Compose(
+            self.transforms = Compose(
                 [
-                    T.RandomShortestSize(
+                    RandomShortestSize(
                         min_size=(480, 512, 544, 576, 608, 640, 672, 704, 736, 768, 800), max_size=1333
                     ),
-                    T.RandomHorizontalFlip(p=hflip_prob),
-                    T.PILToTensor(),
-                    T.ConvertImageDtype(torch.float),
+                    RandomHorizontalFlip(p=hflip_prob),
+                    PILToTensor(),
+                    ConvertImageDtype(torch.float),
                 ]
             )
         elif data_augmentation == "ssd":
-            self.transforms = T.Compose(
+            self.transforms = Compose(
                 [
-                    T.RandomPhotometricDistort(),
-                    T.RandomZoomOut(fill=list(mean)),
-                    T.RandomIoUCrop(),
-                    T.RandomHorizontalFlip(p=hflip_prob),
-                    T.PILToTensor(),
-                    T.ConvertImageDtype(torch.float),
+                    RandomPhotometricDistort(),
+                    RandomZoomOut(fill=list(mean)),
+                    RandomIoUCrop(),
+                    RandomHorizontalFlip(p=hflip_prob),
+                    PILToTensor(),
+                    ConvertImageDtype(torch.float),
                 ]
             )
         elif data_augmentation == "ssdlite":
-            self.transforms = T.Compose(
+            self.transforms = Compose(
                 [
-                    T.RandomIoUCrop(),
-                    T.RandomHorizontalFlip(p=hflip_prob),
-                    T.PILToTensor(),
-                    T.ConvertImageDtype(torch.float),
+                    RandomIoUCrop(),
+                    RandomHorizontalFlip(p=hflip_prob),
+                    PILToTensor(),
+                    ConvertImageDtype(torch.float),
                 ]
             )
         else:
@@ -62,10 +73,10 @@ class DetectionPresetTrain:
 
 class DetectionPresetEval:
     def __init__(self):
-        self.transforms = T.Compose(
+        self.transforms = Compose(
             [
-                T.PILToTensor(),
-                T.ConvertImageDtype(torch.float),
+                PILToTensor(),
+                ConvertImageDtype(torch.float),
             ]
         )
 
